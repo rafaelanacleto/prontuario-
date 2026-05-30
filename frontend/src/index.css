@@ -1,0 +1,220 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  body {
+    @apply m-0 bg-bg font-sans text-sm text-text;
+  }
+
+  #root {
+    @apply h-screen;
+  }
+}
+
+@layer components {
+  .app-shell {
+    @apply flex h-screen overflow-hidden;
+  }
+
+  .main-shell {
+    @apply flex min-w-0 flex-1 flex-col;
+  }
+
+  .content-shell {
+    @apply flex-1 overflow-y-auto p-4 md:p-6;
+  }
+
+  .card {
+    @apply rounded-[14px] border border-border bg-surface p-4 shadow-soft;
+  }
+
+  .card-header {
+    @apply mb-4 flex items-center justify-between gap-3;
+  }
+
+  .card-title {
+    @apply flex items-center gap-2 text-sm font-semibold text-text2;
+  }
+
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-lg border border-border2 bg-surface px-4 py-2 text-sm font-medium text-text transition hover:bg-surface2;
+  }
+
+  .btn-primary {
+    @apply border-accent bg-accent text-white hover:border-accent2 hover:bg-accent2;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  .badge-red {
+    @apply min-w-[18px] rounded-xl bg-danger px-1.5 py-0.5 text-center text-[10px] font-semibold text-white;
+  }
+
+  .chip {
+    @apply inline-flex rounded-2xl px-2.5 py-1 text-xs font-medium;
+  }
+
+  .chip-green {
+    @apply bg-accentLight text-accent2;
+  }
+
+  .chip-amber {
+    @apply bg-[#FAEEDA] text-[#633806];
+  }
+
+  .chip-red {
+    @apply bg-[#FCEBEB] text-[#791F1F];
+  }
+
+  .chip-blue {
+    @apply bg-[#E6F1FB] text-[#0C447C];
+  }
+
+  .chip-gray {
+    @apply bg-surface2 text-text2;
+  }
+
+  .prog-bar {
+    @apply h-1.5 overflow-hidden rounded bg-border;
+  }
+
+  .prog-fill {
+    @apply h-full rounded bg-accent;
+  }
+
+  .prog-fill-amber {
+    @apply bg-amber;
+  }
+
+  .table-wrap {
+    @apply overflow-x-auto rounded-lg;
+  }
+
+  table {
+    @apply w-full border-collapse text-sm;
+  }
+
+  th {
+    @apply whitespace-nowrap border-b border-border px-3 py-2 text-left text-xs font-semibold text-text3;
+  }
+
+  td {
+    @apply border-b border-border px-3 py-2.5 align-middle;
+  }
+
+  tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  tbody tr:hover td {
+    @apply bg-surface2;
+  }
+
+  .td-name {
+    @apply font-medium;
+  }
+
+  .td-sub {
+    @apply text-xs text-text3;
+  }
+
+  .search-bar {
+    @apply flex flex-col gap-2 md:flex-row md:items-center;
+  }
+
+  .search-input-wrap {
+    @apply relative flex-1;
+  }
+
+  .search-input-wrap i {
+    @apply pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-base text-text3;
+  }
+
+  .search-input {
+    @apply w-full rounded-lg border border-border2 bg-surface py-2 pl-9 pr-3 text-sm;
+  }
+
+  .search-input:focus {
+    @apply border-accent outline-none;
+  }
+
+  .form-grid {
+    @apply grid grid-cols-1 gap-3 md:grid-cols-2;
+  }
+
+  .form-group {
+    @apply flex flex-col gap-1;
+  }
+
+  .form-label {
+    @apply text-xs font-medium text-text2;
+  }
+
+  .form-input {
+    @apply rounded-lg border border-border2 bg-surface px-3 py-2 text-sm;
+  }
+
+  .settings-section {
+    @apply rounded-[14px] border border-border bg-surface p-5 shadow-soft;
+  }
+
+  .settings-title {
+    @apply mb-3 flex items-center gap-2 text-sm font-semibold;
+  }
+
+  .settings-row {
+    @apply flex items-center justify-between border-b border-border py-3 last:border-b-0;
+  }
+
+  .settings-row-label {
+    @apply text-sm font-medium;
+  }
+
+  .settings-row-sub {
+    @apply text-xs text-text3;
+  }
+
+  .toggle {
+    @apply relative inline-block h-[22px] w-10 shrink-0;
+  }
+
+  .toggle input {
+    @apply h-0 w-0 opacity-0;
+  }
+
+  .toggle-slider {
+    @apply absolute inset-0 cursor-pointer rounded-full bg-border2 transition;
+  }
+
+  .toggle-slider::before {
+    content: '';
+    @apply absolute left-[3px] top-[3px] h-4 w-4 rounded-full bg-white transition;
+  }
+
+  .toggle input:checked + .toggle-slider {
+    @apply bg-accent;
+  }
+
+  .toggle input:checked + .toggle-slider::before {
+    transform: translateX(18px);
+  }
+
+  .agenda-row {
+    @apply flex items-center gap-3 border-b border-border py-2;
+  }
+
+  .agenda-row:last-child {
+    @apply border-b-0;
+  }
+
+  .agenda-time {
+    @apply min-w-11 text-xs font-semibold text-text2;
+  }
+}

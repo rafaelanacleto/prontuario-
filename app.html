@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClínicaHub — Gestão Multidisciplinar</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.8.0/dist/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --accent:#1D9E75;--accent2:#0F6E56;--accent-light:#E1F5EE;
+  --bg:#F4F6F5;--surface:#FFFFFF;--surface2:#F0F2F1;
+  --border:#E2E6E4;--border2:#C8D0CC;
+  --text:#1A1F1C;--text2:#5A6762;--text3:#8FA099;
+  --red:#E24B4A;--amber:#BA7517;--blue:#185FA5;--purple:#533AB7;
+  --radius:10px;--radius-lg:14px;--sidebar:228px;
+  --shadow:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;height:100vh;overflow:hidden}
+.app{display:flex;height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-logo{padding:20px 16px 14px;border-bottom:1px solid var(--border)}
+.logo-mark{width:36px;height:36px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.logo-mark i{color:#fff;font-size:20px}
+.logo-name{font-size:15px;font-weight:600;color:var(--text)}
+.logo-sub{font-size:11px;color:var(--text3);margin-top:1px}
+nav{padding:10px 8px;flex:1}
+.nav-section{font-size:10px;font-weight:600;color:var(--text3);padding:10px 8px 4px;text-transform:uppercase;letter-spacing:.07em}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);margin-bottom:1px;transition:background .12s,color .12s;border:none;background:none;width:100%;text-align:left}
+.nav-item i{font-size:17px;flex-shrink:0;color:var(--text3)}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--accent-light);color:var(--accent2);font-weight:500}
+.nav-item.active i{color:var(--accent)}
+.sidebar-footer{padding:12px;border-top:1px solid var(--border)}
+.user-chip{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;background:var(--surface2);cursor:pointer;transition:background .12s}
+.user-chip:hover{background:var(--border)}
+.u-avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;flex-shrink:0}
+.u-name{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.u-role{font-size:11px;color:var(--text3)}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{padding:14px 24px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-title{font-size:16px;font-weight:600}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.content{flex:1;overflow-y:auto;padding:22px 24px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--text);transition:background .12s,border-color .12s;font-family:inherit}
+.btn:hover{background:var(--surface2);border-color:var(--border2)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);border-color:var(--accent2)}
+.btn-sm{padding:5px 11px;font-size:12px}
+.btn-icon{padding:7px;border-radius:7px}
+.btn-wpp{border-color:#1D9E75;color:#0F6E56}
+.btn-wpp:hover{background:var(--accent-light)}
+.btn-danger{background:#FCEBEB;border-color:#F0A0A0;color:#791F1F}
+.btn-danger:hover{background:#F7C1C1}
+.notif-badge{background:#E24B4A;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:10px;min-width:18px;text-align:center}
+
+/* CHIPS / BADGES */
+.chip{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500}
+.chip-green{background:#E1F5EE;color:#0F6E56}
+.chip-amber{background:#FAEEDA;color:#633806}
+.chip-blue{background:#E6F1FB;color:#0C447C}
+.chip-red{background:#FCEBEB;color:#791F1F}
+.chip-gray{background:var(--surface2);color:var(--text2)}
+.chip-purple{background:#EEEDFE;color:#3C3489}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow)}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
+.card-title i{font-size:15px}
+
+/* METRIC CARDS */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+.metric-label{font-size:11px;color:var(--text3);font-weight:500;margin-bottom:5px}
+.metric-value{font-size:22px;font-weight:600;line-height:1.2}
+.metric-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.mv-green{color:var(--accent)}
+.mv-red{color:var(--red)}
+.mv-blue{color:var(--blue)}
+
+/* GRID */
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-bottom:16px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:16px}
+.col-span-2{grid-column:span 2}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;border-radius:var(--radius)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;font-weight:600;color:var(--text3);padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--surface2)}
+.td-name{font-weight:500}
+.td-sub{font-size:11px;color:var(--text3);margin-top:1px}
+
+/* FORMS */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-label{font-size:12px;font-weight:500;color:var(--text2)}
+.form-input{padding:8px 11px;border:1px solid var(--border2);border-radius:8px;font-size:13px;color:var(--text);background:var(--surface);font-family:inherit;transition:border-color .15s}
+.form-input:focus{outline:none;border-color:var(--accent)}
+select.form-input{cursor:pointer}
+textarea.form-input{resize:vertical;min-height:80px}
+.form-section{font-size:12px;font-weight:600;color:var(--accent2);margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--accent-light);text-transform:uppercase;letter-spacing:.05em}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;padding-top:16px;border-top:1px solid var(--border);margin-top:16px}
+
+/* SEARCH BAR */
+.search-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.search-input-wrap{flex:1;position:relative}
+.search-input-wrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:16px;pointer-events:none}
+.search-input{width:100%;padding:8px 12px 8px 34px;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-family:inherit;background:var(--surface);color:var(--text)}
+.search-input:focus{outline:none;border-color:var(--accent)}
+
+/* AGENDA */
+.agenda-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.agenda-row:last-child{border-bottom:none}
+.agenda-time{font-size:12px;font-weight:600;color:var(--text2);min-width:44px}
+.agenda-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.agenda-info{flex:1;min-width:0}
+.agenda-name{font-size:13px;font-weight:500}
+.agenda-meta{font-size:11px;color:var(--text3)}
+.agenda-actions{display:flex;gap:6px;flex-shrink:0}
+
+/* PRONTUÁRIO */
+.ptabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:18px}
+.ptab{padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .12s,border-color .12s;font-family:inherit}
+.ptab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.ptab:hover:not(.active){color:var(--text)}
+.evolucao-card{background:var(--surface2);border-radius:9px;padding:14px;margin-bottom:10px;border-left:3px solid var(--accent)}
+.evolucao-date{font-size:11px;color:var(--text3);margin-bottom:5px}
+.obj-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:8px;margin-bottom:8px;cursor:pointer;transition:background .12s}
+.obj-item:hover{background:var(--border)}
+.obj-check{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:background .12s,border-color .12s}
+.obj-check.done{background:var(--accent);border-color:var(--accent)}
+.obj-check.done i{color:#fff;font-size:11px}
+.obj-text{font-size:13px;flex:1}
+.obj-pct{font-size:12px;font-weight:600;color:var(--accent);margin-left:auto;padding-left:10px;flex-shrink:0}
+.prog-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:3px}
+.prog-fill{height:100%;background:var(--accent);border-radius:3px}
+.prog-fill-amber{background:var(--amber)}
+
+/* FINANCIAL */
+.fin-in{color:var(--accent);font-weight:600}
+.fin-out{color:var(--red);font-weight:600}
+
+/* PROFISSIONAL CARD */
+.prof-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow)}
+.prof-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.prof-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.prof-stat{background:var(--surface2);border-radius:7px;padding:7px 9px}
+.prof-stat-label{font-size:10px;color:var(--text3);font-weight:500}
+.prof-stat-value{font-size:15px;font-weight:600;margin-top:1px}
+
+/* MODAL OVERLAY */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius-lg);padding:24px;max-width:640px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);position:relative}
+.modal-close{position:absolute;top:16px;right:16px;border:none;background:none;cursor:pointer;color:var(--text2);padding:4px;border-radius:6px;transition:background .12s}
+.modal-close:hover{background:var(--surface2)}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:18px;padding-right:30px}
+
+/* MSG TEMPLATE */
+.msg-preview{background:var(--surface2);border-radius:9px;padding:14px;font-size:13px;line-height:1.7;margin-bottom:12px;border-left:3px solid var(--accent);color:var(--text)}
+.var-pills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.var-pill{padding:4px 11px;background:var(--accent-light);color:var(--accent2);border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:background .12s}
+.var-pill:hover{background:#9FE1CB}
+
+/* CHART */
+.chart-wrap{position:relative;width:100%;height:220px}
+
+/* PROGRESS SECTION */
+.pat-prog-item{margin-bottom:12px}
+.pat-prog-header{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:4px}
+.pat-prog-name{font-weight:500}
+.pat-prog-pct{font-weight:600;color:var(--accent)}
+.pat-prog-pct.amber{color:var(--amber)}
+
+/* CONFIGURAÇÕES */
+.settings-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.settings-title{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)}
+.settings-row:last-child{border-bottom:none}
+.settings-row-label{font-size:13px;font-weight:500}
+.settings-row-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--border2);border-radius:11px;transition:background .2s}
+.toggle-slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s}
+.toggle input:checked + .toggle-slider{background:var(--accent)}
+.toggle input:checked + .toggle-slider::before{transform:translateX(18px)}
+
+/* ALERTS */
+.alert{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;border-radius:9px;margin-bottom:8px;font-size:13px}
+.alert-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.alert-red .alert-dot{background:var(--red)}
+.alert-amber .alert-dot{background:#EF9F27}
+.alert-blue .alert-dot{background:var(--blue)}
+.alert-title{font-weight:500}
+.alert-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* NOTIF PANEL */
+#notif-panel{display:none;position:fixed;top:60px;right:20px;width:320px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:50}
+.notif-header{padding:14px 16px;border-bottom:1px solid var(--border);font-size:14px;font-weight:600}
+.notif-item{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:10px;cursor:pointer;transition:background .12s}
+.notif-item:hover{background:var(--surface2)}
+.notif-item:last-child{border-bottom:none}
+.notif-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ni-red{background:#FCEBEB;color:var(--red)}
+.ni-amber{background:#FAEEDA;color:#633806}
+.ni-blue{background:#E6F1FB;color:var(--blue)}
+.notif-text{font-size:12px;font-weight:500}
+.notif-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* PANE visibility */
+.pane{display:none}
+.pane.active{display:block}
+.screen{display:none}
+.screen.active{display:block}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark"><i class="ti ti-heartbeat"></i></div>
+    <div class="logo-name">ClínicaHub</div>
+    <div class="logo-sub">Gestão multidisciplinar</div>
+  </div>
+  <nav>
+    <div class="nav-section">Principal</div>
+    <button class="nav-item active" onclick="go('dashboard')"><i class="ti ti-layout-dashboard"></i>Dashboard</button>
+    <button class="nav-item" onclick="go('agenda')"><i class="ti ti-calendar"></i>Agenda</button>
+    <button class="nav-item" onclick="go('pacientes')"><i class="ti ti-users"></i>Pacientes</button>
+    <div class="nav-section">Clínico</div>
+    <button class="nav-item" onclick="go('prontuario')"><i class="ti ti-clipboard-text"></i>Prontuário</button>
+    <button class="nav-item" onclick="go('objetivos')"><i class="ti ti-target"></i>Objetivos</button>
+    <div class="nav-section">Gestão</div>
+    <button class="nav-item" onclick="go('financeiro')"><i class="ti ti-cash"></i>Financeiro</button>
+    <button class="nav-item" onclick="go('profissionais')"><i class="ti ti-stethoscope"></i>Profissionais</button>
+    <button class="nav-item" onclick="go('mensagens')"><i class="ti ti-brand-whatsapp"></i>Confirmações</button>
+    <button class="nav-item" onclick="go('relatorios')"><i class="ti ti-chart-bar"></i>Relatórios</button>
+    <div class="nav-section">Sistema</div>
+    <button class="nav-item" onclick="go('configuracoes')"><i class="ti ti-settings"></i>Configurações</button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-chip" onclick="go('configuracoes')">
+      <div class="u-avatar">G</div>
+      <div style="flex:1;min-width:0">
+        <div class="u-name">Gestora</div>
+        <div class="u-role">Administradora</div>
+      </div>
+      <i class="ti ti-chevron-right" style="font-size:14px;color:var(--text3)"></i>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-right">
+      <button class="btn btn-sm" onclick="toggleNotif()">
+        <i class="ti ti-bell"></i>
+        <span class="notif-badge" id="notif-count">3</span>
+      </button>
+      <button class="btn btn-sm btn-primary" id="btn-action" onclick="handleAction()">
+        <i class="ti ti-plus"></i><span id="action-label">Novo paciente</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="content" id="main-content">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="screen active" id="screen-dashboard">
+      <div class="metrics">
+        <div class="metric"><div class="metric-label">Pacientes ativos</div><div class="metric-value mv-blue">47</div><div class="metric-sub">+3 este mês</div></div>
+        <div class="metric"><div class="metric-label">Sessões hoje</div><div class="metric-value">12</div><div class="metric-sub">2 pendentes confirmação</div></div>
+        <div class="metric"><div class="metric-label">Receita do mês</div><div class="metric-value mv-green">R$ 18.450</div><div class="metric-sub">Meta: R$ 20.000</div></div>
+        <div class="metric"><div class="metric-label">Repasses (mai)</div><div class="metric-value">R$ 9.820</div><div class="metric-sub">6 profissionais</div></div>
+        <div class="metric"><div class="metric-label">Taxa de presença</div><div class="metric-value mv-green">89%</div><div class="metric-sub">↑ 2% vs abril</div></div>
+        <div class="metric"><div class="metric-label">Objetivos atingidos</div><div class="metric-value mv-green">73%</div><div class="metric-sub">Média dos pacientes</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card col-span-2">
+          <div class="card-header">
+            <div class="card-title"><i class="ti ti-chart-bar"></i>Receita mensal — 2025</div>
+            <div style="display:flex;gap:10px;font-size:11px;color:var(--text3)">
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#1D9E75;border-radius:2px;display:inline-block"></span>Receita</span>
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#9FE1CB;border-radius:2px;display:inline-block"></span>Repasses</span>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:200px"><canvas id="c-receita"></canvas></div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-calendar-event"></i>Sessões de hoje</div><button class="btn btn-sm" onclick="go('agenda')">Ver agenda</button></div>
+          <div class="agenda-row"><div class="agenda-time">08:00</div><div class="agenda-dot" style="background:#1D9E75"></div><div class="agenda-info"><div class="agenda-name">Lucas M.</div><div class="agenda-meta">Fonoaudiologia · Dra. Ana Paula</div></div><div class="agenda-actions"><span class="chip chip-green">Confirmado</span><button class="btn btn-sm btn-wpp" onclick="go('mensagens')"><i class="ti ti-brand-whatsapp"></i></button></div></div>
+          <div class="agenda-row"><div class="agenda-time">09:00</div><div class="agenda-dot" style="background:#185FA5"></div><div class="agenda-info"><div class="agenda-name">Sofia R.</div><div class="agenda-meta">Psicopedagogia · Dr. Caio</div></div><div class="agenda-actions"><span class="chip chip-amber">Pendente</span><button class="btn btn-sm btn-wpp" onclick="go('mensagens')"><i class="ti ti-brand-whatsapp"></i></button></div></div>
+          <div class="agenda-row"><div class="agenda-time">10:30</div><div class="agenda-dot" style="background:#BA7517"></div><div class="agenda-info"><div class="agenda-name">Pedro A.</div><div class="agenda-meta">Psicologia · Dra. Beatriz</div></div><div class="agenda-actions"><span class="chip chip-green">Confirmado</span><button class="btn btn-sm btn-wpp" onclick="go('mensagens')"><i class="ti ti-brand-whatsapp"></i></button></div></div>
+          <div class="agenda-row"><div class="agenda-time">14:00</div><div class="agenda-dot" style="background:#1D9E75"></div><div class="agenda-info"><div class="agenda-name">Maria C.</div><div class="agenda-meta">Fonoaudiologia · Dra. Ana Paula</div></div><div class="agenda-actions"><span class="chip chip-amber">Pendente</span><button class="btn btn-sm btn-wpp" onclick="go('mensagens')"><i class="ti ti-brand-whatsapp"></i></button></div></div>
+          <div class="agenda-row"><div class="agenda-time">15:30</div><div class="agenda-dot" style="background:#E24B4A"></div><div class="agenda-info"><div class="agenda-name">João F.</div><div class="agenda-meta">Psicologia · Dra. Beatriz</div></div><div class="agenda-actions"><span class="chip chip-red">Faltou</span></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-target"></i>Avanço mensal por paciente</div></div>
+          <div class="pat-prog-item"><div class="pat-prog-header"><span class="pat-prog-name">Maria C.</span><span class="pat-prog-pct">91%</span></div><div class="prog-bar"><div class="prog-fill" style="width:91%"></div></div></div>
+          <div class="pat-prog-item"><div class="pat-prog-header"><span class="pat-prog-name">Lucas M.</span><span class="pat-prog-pct">85%</span></div><div class="prog-bar"><div class="prog-fill" style="width:85%"></div></div></div>
+          <div class="pat-prog-item"><div class="pat-prog-header"><span class="pat-prog-name">Sofia R.</span><span class="pat-prog-pct">72%</span></div><div class="prog-bar"><div class="prog-fill" style="width:72%"></div></div></div>
+          <div class="pat-prog-item"><div class="pat-prog-header"><span class="pat-prog-name">João F.</span><span class="pat-prog-pct amber">63%</span></div><div class="prog-bar"><div class="prog-fill prog-fill-amber" style="width:63%"></div></div></div>
+          <div class="pat-prog-item"><div class="pat-prog-header"><span class="pat-prog-name">Pedro A.</span><span class="pat-prog-pct amber">58%</span></div><div class="prog-bar"><div class="prog-fill prog-fill-amber" style="width:58%"></div></div></div>
+          <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+            <div class="pat-prog-header"><span style="font-weight:600;color:var(--text2)">Média geral</span><span class="pat-prog-pct">73%</span></div>
+            <div class="prog-bar" style="height:7px"><div class="prog-fill" style="width:73%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-alert-circle"></i>Alertas e pendências</div><button class="btn btn-sm" onclick="go('mensagens')">Enviar confirmações</button></div>
+        <div class="grid-3" style="margin-bottom:0">
+          <div class="alert alert-red" style="background:#FCEBEB;border-radius:9px"><div class="alert-dot"></div><div><div class="alert-title">Pagamento pendente</div><div class="alert-sub">Sofia R. — sessão 20/05 · R$ 200,00</div></div></div>
+          <div class="alert alert-amber" style="background:#FAEEDA;border-radius:9px"><div class="alert-dot"></div><div><div class="alert-title">Prontuário desatualizado</div><div class="alert-sub">Pedro A. — 8 dias sem registro</div></div></div>
+          <div class="alert alert-blue" style="background:#E6F1FB;border-radius:9px"><div class="alert-dot"></div><div><div class="alert-title">3 confirmações pendentes</div><div class="alert-sub">Amanhã · Sofia R., Clara B., Ana G.</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== AGENDA ===== -->
+    <div class="screen" id="screen-agenda">
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <div style="display:flex;align-items:center;gap:10px">
+            <button class="btn btn-sm btn-icon"><i class="ti ti-chevron-left"></i></button>
+            <span style="font-weight:600">27 de maio de 2025</span>
+            <button class="btn btn-sm btn-icon"><i class="ti ti-chevron-right"></i></button>
+            <button class="btn btn-sm">Hoje</button>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm"><i class="ti ti-brand-google"></i> Sincronizar Google</button>
+            <button class="btn btn-sm btn-primary" onclick="openModal('modal-agendamento')"><i class="ti ti-plus"></i> Novo agendamento</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
+          <span style="font-size:11px;padding:3px 9px;background:var(--surface2);border-radius:20px;font-weight:500;cursor:pointer">Todos</span>
+          <span style="font-size:11px;padding:3px 9px;background:var(--accent-light);color:var(--accent2);border-radius:20px;font-weight:500;cursor:pointer">Dra. Ana Paula</span>
+          <span style="font-size:11px;padding:3px 9px;background:var(--surface2);border-radius:20px;font-weight:500;cursor:pointer">Dr. Caio</span>
+          <span style="font-size:11px;padding:3px 9px;background:var(--surface2);border-radius:20px;font-weight:500;cursor:pointer">Dra. Beatriz</span>
+          <span style="font-size:11px;padding:3px 9px;background:var(--surface2);border-radius:20px;font-weight:500;cursor:pointer">Dr. Rafael</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Horário</th><th>Paciente</th><th>Profissional</th><th>Especialidade</th><th>Duração</th><th>Status</th><th>Confirmação</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>08:00</td><td><div class="td-name">Lucas M.</div></td><td>Dra. Ana Paula</td><td>Fonoaudiologia</td><td>50 min</td><td><span class="chip chip-green">Confirmado</span></td><td><button class="btn btn-sm btn-wpp" onclick="go('mensagens')"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button></td><td><button class="btn btn-sm btn-icon" onclick="go('prontuario')"><i class="ti ti-file-text"></i></button></td></tr>
+              <tr><td>09:00</td><td><div class="td-name">Sofia R.</div></td><td>Dr. Caio Lima</td><td>Psicopedagogia</td><td>50 min</td><td><span class="chip chip-amber">Pendente</span></td><td><button class="btn btn-sm btn-wpp" onclick="go('mensagens')"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button></td><td><button class="btn btn-sm btn-icon" onclick="go('prontuario')"><i class="ti ti-file-text"></i></button></td></tr>
+              <tr><td>10:30</td><td><div class="td-name">Pedro A.</div></td><td>Dra. Beatriz</td><td>Psicologia</td><td>50 min</td><td><span class="chip chip-green">Confirmado</span></td><td><button class="btn btn-sm btn-wpp" onclick="go('mensagens')"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button></td><td><button class="btn btn-sm btn-icon" onclick="go('prontuario')"><i class="ti ti-file-text"></i></button></td></tr>
+              <tr><td>11:30</td><td><div class="td-name">Clara B.</div></td><td>Dr. Caio Lima</td><td>Psicopedagogia</td><td>50 min</td><td><span class="chip chip-amber">Pendente</span></td><td><button class="btn btn-sm btn-wpp" onclick="go('mensagens')"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button></td><td><button class="btn btn-sm btn-icon" onclick="go('prontuario')"><i class="ti ti-file-text"></i></button></td></tr>
+              <tr><td>14:00</td><td><div class="td-name">Maria C.</div></td><td>Dra. Ana Paula</td><td>Fonoaudiologia</td><td>50 min</td><td><span class="chip chip-green">Confirmado</span></td><td><button class="btn btn-sm btn-wpp" onclick="go('mensagens')"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button></td><td><button class="btn btn-sm btn-icon" onclick="go('prontuario')"><i class="ti ti-file-text"></i></button></td></tr>
+              <tr><td>15:30</td><td><div class="td-name">João F.</div></td><td>Dra. Beatriz</td><td>Psicologia</td><td>50 min</td><td><span class="chip chip-red">Faltou</span></td><td>—</td><td><button class="btn btn-sm btn-icon" onclick="go('prontuario')"><i class="ti ti-file-text"></i></button></td></tr>
+              <tr><td>16:00</td><td><div class="td-name">Ana G.</div></td><td>Dr. Rafael</td><td>Terapia Ocupacional</td><td>50 min</td><td><span class="chip chip-blue">Agendado</span></td><td><button class="btn btn-sm btn-wpp" onclick="go('mensagens')"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button></td><td><button class="btn btn-sm btn-icon" onclick="go('prontuario')"><i class="ti ti-file-text"></i></button></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px;padding:10px 12px;background:var(--surface2);border-radius:8px;font-size:12px;color:var(--text3);display:flex;align-items:center;gap:6px"><i class="ti ti-info-circle"></i> Integração com Google Calendar ativada. Alterações são sincronizadas automaticamente.</div>
+      </div>
+    </div>
+
+    <!-- ===== PACIENTES ===== -->
+    <div class="screen" id="screen-pacientes">
+      <div class="search-bar">
+        <div class="search-input-wrap"><i class="ti ti-search"></i><input class="search-input" type="text" placeholder="Buscar por nome, responsável, diagnóstico ou profissional..."></div>
+        <button class="btn btn-sm"><i class="ti ti-filter"></i> Filtros</button>
+        <button class="btn btn-sm btn-primary" onclick="openModal('modal-paciente')"><i class="ti ti-plus"></i> Novo paciente</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Paciente</th><th>Responsável</th><th>Diagnóstico</th><th>Profissional</th><th>Frequência</th><th>Pagamento</th><th>Situação</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><div class="td-name">Lucas Mendes</div><div class="td-sub">9 anos</div></td><td><div>Carla Mendes (mãe)</div><div class="td-sub">(51) 99999-0001</div></td><td>TEA Nível 1</td><td>Dra. Ana Paula</td><td>2x/semana</td><td><span class="chip chip-green">Em dia</span></td><td><span class="chip chip-green">Ativo</span></td><td><div style="display:flex;gap:4px"><button class="btn btn-sm btn-icon" onclick="go('prontuario')" title="Prontuário"><i class="ti ti-file-text"></i></button><button class="btn btn-sm btn-icon" title="Editar" onclick="openModal('modal-paciente')"><i class="ti ti-edit"></i></button></div></td></tr>
+              <tr><td><div class="td-name">Sofia Rodrigues</div><div class="td-sub">7 anos</div></td><td><div>Patrícia Rodrigues (mãe)</div><div class="td-sub">(51) 99999-0002</div></td><td>TDAH</td><td>Dr. Caio Lima</td><td>2x/semana</td><td><span class="chip chip-red">Pendente</span></td><td><span class="chip chip-green">Ativo</span></td><td><div style="display:flex;gap:4px"><button class="btn btn-sm btn-icon" onclick="go('prontuario')"><i class="ti ti-file-text"></i></button><button class="btn btn-sm btn-icon" onclick="openModal('modal-paciente')"><i class="ti ti-edit"></i></button></div></td></tr>
+              <tr><td><div class="td-name">Pedro Alves</div><div class="td-sub">11 anos</div></td><td><div>Roberto Alves (pai)</div><div class="td-sub">(51) 99999-0003</div></td><td>TEA Nível 2</td><td>Dra. Beatriz</td><td>3x/semana</td><td><span class="chip chip-green">Em dia</span></td><td><span class="chip chip-green">Ativo</span></td><td><div style="display:flex;gap:4px"><button class="btn btn-sm btn-icon" onclick="go('prontuario')"><i class="ti ti-file-text"></i></button><button class="btn btn-sm btn-icon" onclick="openModal('modal-paciente')"><i class="ti ti-edit"></i></button></div></td></tr>
+              <tr><td><div class="td-name">Maria Costa</div><div class="td-sub">6 anos</div></td><td><div>Fernanda Costa (mãe)</div><div class="td-sub">(51) 99999-0004</div></td><td>Atraso de linguagem</td><td>Dra. Ana Paula</td><td>2x/semana</td><td><span class="chip chip-green">Em dia</span></td><td><span class="chip chip-green">Ativo</span></td><td><div style="display:flex;gap:4px"><button class="btn btn-sm btn-icon" onclick="go('prontuario')"><i class="ti ti-file-text"></i></button><button class="btn btn-sm btn-icon" onclick="openModal('modal-paciente')"><i class="ti ti-edit"></i></button></div></td></tr>
+              <tr><td><div class="td-name">João Ferreira</div><div class="td-sub">8 anos</div></td><td><div>Marcos Ferreira (pai)</div><div class="td-sub">(51) 99999-0005</div></td><td>Dislexia</td><td>Dra. Beatriz</td><td>2x/semana</td><td><span class="chip chip-amber">Parcial</span></td><td><span class="chip chip-amber">Em avaliação</span></td><td><div style="display:flex;gap:4px"><button class="btn btn-sm btn-icon" onclick="go('prontuario')"><i class="ti ti-file-text"></i></button><button class="btn btn-sm btn-icon" onclick="openModal('modal-paciente')"><i class="ti ti-edit"></i></button></div></td></tr>
+              <tr><td><div class="td-name">Clara Borges</div><div class="td-sub">5 anos</div></td><td><div>Juliana Borges (mãe)</div><div class="td-sub">(51) 99999-0006</div></td><td>Atraso global do desenvolvimento</td><td>Dr. Rafael</td><td>2x/semana</td><td><span class="chip chip-green">Em dia</span></td><td><span class="chip chip-green">Ativo</span></td><td><div style="display:flex;gap:4px"><button class="btn btn-sm btn-icon" onclick="go('prontuario')"><i class="ti ti-file-text"></i></button><button class="btn btn-sm btn-icon" onclick="openModal('modal-paciente')"><i class="ti ti-edit"></i></button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PRONTUÁRIO ===== -->
+    <div class="screen" id="screen-prontuario">
+      <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:46px;height:46px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--accent2)">LM</div>
+          <div style="flex:1">
+            <div style="font-size:16px;font-weight:600">Lucas Mendes</div>
+            <div style="font-size:12px;color:var(--text3)">9 anos · TEA Nível 1 · Fonoaudiologia · Dra. Ana Paula · Início: mar/2024</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm"><i class="ti ti-download"></i> Exportar PDF</button>
+            <button class="btn btn-sm btn-primary" onclick="openModal('modal-sessao')"><i class="ti ti-plus"></i> Nova sessão</button>
+          </div>
+        </div>
+      </div>
+      <div class="ptabs">
+        <button class="ptab active" onclick="setPtab(this,'pane-evolucao')">Evolução</button>
+        <button class="ptab" onclick="setPtab(this,'pane-objetivos-p')">Objetivos da sessão</button>
+        <button class="ptab" onclick="setPtab(this,'pane-anamnese')">Anamnese</button>
+        <button class="ptab" onclick="setPtab(this,'pane-docs')">Documentos</button>
+        <button class="ptab" onclick="setPtab(this,'pane-historico')">Histórico de pagamentos</button>
+      </div>
+      <div id="pane-evolucao" class="pane active">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-notes"></i>Registros de evolução</div></div>
+          <div class="evolucao-card"><div class="evolucao-date">20/05/2025 — Dra. Ana Paula · Sessão #28</div><div style="font-size:13px">Paciente demonstrou boa adesão às atividades lúdicas. Ampliou vocabulário com 4 novas palavras funcionais. Manteve contato ocular por períodos mais longos (até 6 segundos). Objetivo da sessão: comunicação funcional — <span style="color:var(--accent);font-weight:600">atingido ✓</span>.</div></div>
+          <div class="evolucao-card" style="border-left-color:var(--amber)"><div class="evolucao-date">13/05/2025 — Dra. Ana Paula · Sessão #27</div><div style="font-size:13px">Trabalhamos com objetos de interesse para ampliar a iniciativa comunicativa. Resposta positiva ao reforço positivo. Ainda apresenta resistência a mudanças de rotina na transição entre atividades. Objetivo: tolerância à frustração — <span style="color:var(--amber);font-weight:600">parcialmente atingido</span>.</div></div>
+          <div class="evolucao-card" style="border-left-color:var(--border2)"><div class="evolucao-date">06/05/2025 — Dra. Ana Paula · Sessão #26</div><div style="font-size:13px">Sessão focada em comunicação com pictogramas. Boa participação. Nomeou 8 objetos corretamente. Primeira tentativa de frase com 2 palavras observada espontaneamente.</div></div>
+        </div>
+      </div>
+      <div id="pane-objetivos-p" class="pane">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-target"></i>Objetivos — maio 2025</div><button class="btn btn-sm btn-primary" onclick="openModal('modal-objetivo')"><i class="ti ti-plus"></i> Novo objetivo</button></div>
+          <div id="obj-list">
+            <div class="obj-item" onclick="toggleObj(this)"><div class="obj-check done"><i class="ti ti-check"></i></div><div class="obj-text">Nomear 10 objetos do cotidiano espontaneamente</div><div class="obj-pct">100%</div></div>
+            <div class="obj-item" onclick="toggleObj(this)"><div class="obj-check done"><i class="ti ti-check"></i></div><div class="obj-text">Manter contato ocular por 5 segundos em pedido</div><div class="obj-pct">80%</div></div>
+            <div class="obj-item" onclick="toggleObj(this)"><div class="obj-check"></div><div class="obj-text">Usar frases de 2 palavras para pedir algo</div><div class="obj-pct">60%</div></div>
+            <div class="obj-item" onclick="toggleObj(this)"><div class="obj-check"></div><div class="obj-text">Tolerar transição de atividade sem crise (3x/semana)</div><div class="obj-pct">40%</div></div>
+          </div>
+          <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+            <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:6px"><span>Progresso geral do mês</span><span style="color:var(--accent)">70%</span></div>
+            <div class="prog-bar" style="height:8px"><div class="prog-fill" style="width:70%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div id="pane-anamnese" class="pane">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-user"></i>Anamnese e dados clínicos</div><button class="btn btn-sm" onclick="openModal('modal-paciente')"><i class="ti ti-edit"></i> Editar</button></div>
+          <div class="form-grid">
+            <div><div class="form-label">Nome completo</div><div style="font-size:13px;padding:8px 0">Lucas Mendes</div></div>
+            <div><div class="form-label">Data de nascimento</div><div style="font-size:13px;padding:8px 0">15/03/2016 (9 anos)</div></div>
+            <div><div class="form-label">Diagnóstico</div><div style="font-size:13px;padding:8px 0">TEA Nível 1 (F84.0)</div></div>
+            <div><div class="form-label">Data de início</div><div style="font-size:13px;padding:8px 0">Março de 2024</div></div>
+            <div><div class="form-label">Responsável</div><div style="font-size:13px;padding:8px 0">Carla Mendes (mãe)</div></div>
+            <div><div class="form-label">Contato</div><div style="font-size:13px;padding:8px 0">(51) 99999-0001</div></div>
+            <div><div class="form-label">Escola</div><div style="font-size:13px;padding:8px 0">E.M. Monteiro Lobato — 4º ano</div></div>
+            <div><div class="form-label">Frequência</div><div style="font-size:13px;padding:8px 0">2x por semana — ter e qui</div></div>
+          </div>
+          <div class="form-section">Observações clínicas</div>
+          <div style="font-size:13px;line-height:1.7;color:var(--text)">Hipersensibilidade auditiva relatada pela família. Grande interesse por dinossauros e trens — usar como recurso terapêutico. Responde bem ao reforço positivo. Sono regular. Faz uso de risperidona (Dr. Souza, neuropediatria).</div>
+        </div>
+      </div>
+      <div id="pane-docs" class="pane">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-files"></i>Documentos e laudos</div><button class="btn btn-sm btn-primary"><i class="ti ti-upload"></i> Enviar arquivo</button></div>
+          <div class="agenda-row"><i class="ti ti-file-text" style="font-size:20px;color:var(--blue)"></i><div class="agenda-info"><div class="agenda-name">Laudo neurológico — Dr. Souza</div><div class="agenda-meta">Enviado em 10/01/2025 · PDF · 2,3 MB</div></div><button class="btn btn-sm"><i class="ti ti-download"></i> Baixar</button></div>
+          <div class="agenda-row"><i class="ti ti-file-text" style="font-size:20px;color:var(--accent)"></i><div class="agenda-info"><div class="agenda-name">Relatório fonoaudiológico — Dra. Ana Paula</div><div class="agenda-meta">Enviado em 22/04/2025 · PDF · 1,1 MB</div></div><button class="btn btn-sm"><i class="ti ti-download"></i> Baixar</button></div>
+          <div class="agenda-row"><i class="ti ti-file-text" style="font-size:20px;color:var(--amber)"></i><div class="agenda-info"><div class="agenda-name">Relatório escolar — 1º semestre 2025</div><div class="agenda-meta">Enviado em 05/02/2025 · PDF · 890 KB</div></div><button class="btn btn-sm"><i class="ti ti-download"></i> Baixar</button></div>
+        </div>
+      </div>
+      <div id="pane-historico" class="pane">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-receipt"></i>Histórico de pagamentos</div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Data</th><th>Sessão</th><th>Profissional</th><th>Valor</th><th>Forma de pagamento</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>20/05/2025</td><td>#28</td><td>Dra. Ana Paula</td><td>R$ 180,00</td><td>PIX</td><td><span class="chip chip-green">Pago</span></td></tr>
+                <tr><td>13/05/2025</td><td>#27</td><td>Dra. Ana Paula</td><td>R$ 180,00</td><td>PIX</td><td><span class="chip chip-green">Pago</span></td></tr>
+                <tr><td>06/05/2025</td><td>#26</td><td>Dra. Ana Paula</td><td>R$ 180,00</td><td>Cartão</td><td><span class="chip chip-green">Pago</span></td></tr>
+                <tr><td>29/04/2025</td><td>#25</td><td>Dra. Ana Paula</td><td>R$ 180,00</td><td>PIX</td><td><span class="chip chip-green">Pago</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== OBJETIVOS ===== -->
+    <div class="screen" id="screen-objetivos">
+      <div class="metrics">
+        <div class="metric"><div class="metric-label">Média geral</div><div class="metric-value mv-green">73%</div><div class="metric-sub">maio 2025</div></div>
+        <div class="metric"><div class="metric-label">Acima de 80%</div><div class="metric-value mv-blue">18 pacientes</div></div>
+        <div class="metric"><div class="metric-label">Atenção necessária</div><div class="metric-value mv-red">5 pacientes</div><div class="metric-sub">Abaixo de 50%</div></div>
+        <div class="metric"><div class="metric-label">Objetivos totais</div><div class="metric-value">184</div><div class="metric-sub">47 pacientes</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card col-span-2">
+          <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar"></i>Progresso mensal por paciente (top 8)</div></div>
+          <div class="chart-wrap" style="height:240px"><canvas id="c-objetivos"></canvas></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-trending-up"></i>Evolução mensal da média</div></div>
+        <div class="chart-wrap" style="height:200px"><canvas id="c-avanco"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ===== FINANCEIRO ===== -->
+    <div class="screen" id="screen-financeiro">
+      <div class="metrics">
+        <div class="metric"><div class="metric-label">Entradas (mai)</div><div class="metric-value mv-green">R$ 18.450</div></div>
+        <div class="metric"><div class="metric-label">Saídas (mai)</div><div class="metric-value mv-red">R$ 6.320</div></div>
+        <div class="metric"><div class="metric-label">Saldo do mês</div><div class="metric-value mv-green">R$ 12.130</div></div>
+        <div class="metric"><div class="metric-label">Inadimplência</div><div class="metric-value mv-red">R$ 560</div><div class="metric-sub">3 pagamentos</div></div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-list"></i>Movimentações — maio 2025</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm"><i class="ti ti-filter"></i> Filtrar</button>
+            <button class="btn btn-sm"><i class="ti ti-download"></i> Exportar</button>
+            <button class="btn btn-sm btn-primary" onclick="openModal('modal-lancamento')"><i class="ti ti-plus"></i> Novo lançamento</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Tipo</th><th>Valor</th><th>Forma</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>27/05</td><td>Lucas M. — Fonoaudiologia</td><td>Sessão</td><td><span class="chip chip-green">Entrada</span></td><td class="fin-in">+ R$ 180,00</td><td>PIX</td><td><span class="chip chip-green">Pago</span></td></tr>
+              <tr><td>26/05</td><td>Aluguel da sala</td><td>Despesa fixa</td><td><span class="chip chip-red">Saída</span></td><td class="fin-out">− R$ 2.200,00</td><td>Transferência</td><td><span class="chip chip-green">Pago</span></td></tr>
+              <tr><td>25/05</td><td>Sofia R. — Psicopedagogia</td><td>Sessão</td><td><span class="chip chip-green">Entrada</span></td><td class="fin-in">+ R$ 200,00</td><td>—</td><td><span class="chip chip-amber">Pendente</span></td></tr>
+              <tr><td>24/05</td><td>Repasse Dra. Ana Paula</td><td>Repasse</td><td><span class="chip chip-red">Saída</span></td><td class="fin-out">− R$ 1.840,00</td><td>PIX</td><td><span class="chip chip-green">Pago</span></td></tr>
+              <tr><td>23/05</td><td>Pedro A. — Psicologia</td><td>Sessão</td><td><span class="chip chip-green">Entrada</span></td><td class="fin-in">+ R$ 160,00</td><td>Cartão</td><td><span class="chip chip-green">Pago</span></td></tr>
+              <tr><td>22/05</td><td>Material de escritório</td><td>Suprimentos</td><td><span class="chip chip-red">Saída</span></td><td class="fin-out">− R$ 180,00</td><td>Cartão</td><td><span class="chip chip-green">Pago</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-users"></i>Fechamento mensal — repasses</div>
+          <button class="btn btn-sm"><i class="ti ti-send"></i> Gerar comprovantes</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Profissional</th><th>Especialidade</th><th>Sessões</th><th>Valor gerado</th><th>% Repasse</th><th>Valor a pagar</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><div class="td-name">Dra. Ana Paula</div></td><td>Fonoaudiologia</td><td>32</td><td>R$ 4.600</td><td>40%</td><td style="font-weight:600">R$ 1.840</td><td><span class="chip chip-green">Pago</span></td><td><button class="btn btn-sm btn-wpp"><i class="ti ti-brand-whatsapp"></i></button></td></tr>
+              <tr><td><div class="td-name">Dr. Caio Lima</div></td><td>Psicopedagogia</td><td>28</td><td>R$ 5.600</td><td>40%</td><td style="font-weight:600">R$ 2.240</td><td><span class="chip chip-amber">Pendente</span></td><td><button class="btn btn-sm btn-wpp"><i class="ti ti-brand-whatsapp"></i></button></td></tr>
+              <tr><td><div class="td-name">Dra. Beatriz</div></td><td>Psicologia</td><td>24</td><td>R$ 3.840</td><td>45%</td><td style="font-weight:600">R$ 1.728</td><td><span class="chip chip-green">Pago</span></td><td><button class="btn btn-sm btn-wpp"><i class="ti ti-brand-whatsapp"></i></button></td></tr>
+              <tr><td><div class="td-name">Dr. Rafael</div></td><td>Terapia Ocupacional</td><td>20</td><td>R$ 3.200</td><td>40%</td><td style="font-weight:600">R$ 1.280</td><td><span class="chip chip-amber">Pendente</span></td><td><button class="btn btn-sm btn-wpp"><i class="ti ti-brand-whatsapp"></i></button></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px;padding:12px;background:var(--surface2);border-radius:8px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:13px;font-weight:600">Total a repassar</span>
+          <span style="font-size:16px;font-weight:700;color:var(--red)">R$ 7.088</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PROFISSIONAIS ===== -->
+    <div class="screen" id="screen-profissionais">
+      <div class="grid-3" style="margin-bottom:16px">
+        <div class="prof-card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div class="prof-avatar" style="background:#1D9E75">AP</div>
+            <div><div style="font-weight:600;font-size:14px">Dra. Ana Paula</div><div style="font-size:12px;color:var(--text3)">Fonoaudióloga · CRFa 1234</div></div>
+            <span class="chip chip-green" style="margin-left:auto">Ativa</span>
+          </div>
+          <div class="prof-stats-grid">
+            <div class="prof-stat"><div class="prof-stat-label">Sessões (mês)</div><div class="prof-stat-value">32</div></div>
+            <div class="prof-stat"><div class="prof-stat-label">Repasse</div><div class="prof-stat-value" style="color:var(--accent)">40%</div></div>
+            <div class="prof-stat"><div class="prof-stat-label">Pacientes ativos</div><div class="prof-stat-value">14</div></div>
+            <div class="prof-stat"><div class="prof-stat-label">Valor (mai)</div><div class="prof-stat-value">R$ 1.840</div></div>
+          </div>
+          <div style="margin-top:10px"><div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px">Média de avanço dos pacientes</div><div class="prog-bar" style="height:6px"><div class="prog-fill" style="width:81%"></div></div><div style="font-size:11px;color:var(--accent);margin-top:3px;font-weight:600">81%</div></div>
+        </div>
+        <div class="prof-card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div class="prof-avatar" style="background:#185FA5">CL</div>
+            <div><div style="font-weight:600;font-size:14px">Dr. Caio Lima</div><div style="font-size:12px;color:var(--text3)">Psicopedagogo · ABPp 5678</div></div>
+            <span class="chip chip-green" style="margin-left:auto">Ativo</span>
+          </div>
+          <div class="prof-stats-grid">
+            <div class="prof-stat"><div class="prof-stat-label">Sessões (mês)</div><div class="prof-stat-value">28</div></div>
+            <div class="prof-stat"><div class="prof-stat-label">Repasse</div><div class="prof-stat-value" style="color:var(--accent)">40%</div></div>
+            <div class="prof-stat"><div class="prof-stat-label">Pacientes ativos</div><div class="prof-stat-value">12</div></div>
+            <div class="prof-stat"><div class="prof-stat-label">Valor (mai)</div><div class="prof-stat-value">R$ 2.240</div></div>
+          </div>
+          <div style="margin-top:10px"><div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px">Média de avanço dos pacientes</div><div class="prog-bar" style="height:6px"><div class="prog-fill" style="width:69%"></div></div><div style="font-size:11px;color:var(--accent);margin-top:3px;font-weight:600">69%</div></div>
+        </div>
+        <div class="prof-card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div class="prof-avatar" style="background:#BA7517">BS</div>
+            <div><div style="font-weight:600;font-size:14px">Dra. Beatriz</div><div style="font-size:12px;color:var(--text3)">Psicóloga · CRP 07/9999</div></div>
+            <span class="chip chip-green" style="margin-left:auto">Ativa</span>
+          </div>
+          <div class="prof-stats-grid">
+            <div class="prof-stat"><div class="prof-stat-label">Sessões (mês)</div><div class="prof-stat-value">24</div></div>
+            <div class="prof-stat"><div class="prof-stat-label">Repasse</div><div class="prof-stat-value" style="color:var(--accent)">45%</div></div>
+            <div class="prof-stat"><div class="prof-stat-label">Pacientes ativos</div><div class="prof-stat-value">10</div></div>
+            <div class="prof-stat"><div class="prof-stat-label">Valor (mai)</div><div class="prof-stat-value">R$ 1.728</div></div>
+          </div>
+          <div style="margin-top:10px"><div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px">Média de avanço dos pacientes</div><div class="prog-bar" style="height:6px"><div class="prog-fill" style="width:74%"></div></div><div style="font-size:11px;color:var(--accent);margin-top:3px;font-weight:600">74%</div></div>
+        </div>
+        <div class="prof-card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div class="prof-avatar" style="background:#533AB7">RS</div>
+            <div><div style="font-weight:600;font-size:14px">Dr. Rafael</div><div style="font-size:12px;color:var(--text3)">Ter. Ocupacional · CREFITO</div></div>
+            <span class="chip chip-green" style="margin-left:auto">Ativo</span>
+          </div>
+          <div class="prof-stats-grid">
+            <div class="prof-stat"><div class="prof-stat-label">Sessões (mês)</div><div class="prof-stat-value">20</div></div>
+            <div class="prof-stat"><div class="prof-stat-label">Repasse</div><div class="prof-stat-value" style="color:var(--accent)">40%</div></div>
+            <div class="prof-stat"><div class="prof-stat-label">Pacientes ativos</div><div class="prof-stat-value">9</div></div>
+            <div class="prof-stat"><div class="prof-stat-label">Valor (mai)</div><div class="prof-stat-value">R$ 1.280</div></div>
+          </div>
+          <div style="margin-top:10px"><div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px">Média de avanço dos pacientes</div><div class="prog-bar" style="height:6px"><div class="prog-fill prog-fill-amber" style="width:62%"></div></div><div style="font-size:11px;color:var(--amber);margin-top:3px;font-weight:600">62%</div></div>
+        </div>
+        <div class="prof-card" style="border:1.5px dashed var(--border2);background:var(--surface2);display:flex;align-items:center;justify-content:center;cursor:pointer;min-height:180px" onclick="openModal('modal-profissional')">
+          <div style="text-align:center;color:var(--text3)">
+            <i class="ti ti-plus" style="font-size:28px;display:block;margin-bottom:8px"></i>
+            <div style="font-size:13px;font-weight:500">Adicionar profissional</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title"><i class="ti ti-chart-bar"></i>Comparativo de sessões — profissionais</div></div>
+        <div class="chart-wrap" style="height:200px"><canvas id="c-profs"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ===== MENSAGENS ===== -->
+    <div class="screen" id="screen-mensagens">
+      <div class="grid-2">
+        <div class="card col-span-2">
+          <div class="card-header"><div class="card-title"><i class="ti ti-brand-whatsapp"></i>Template de confirmação de atendimento</div><button class="btn btn-sm"><i class="ti ti-edit"></i> Editar template</button></div>
+          <div class="msg-preview">
+            Olá, <strong>{nome_responsavel}</strong>! 😊<br>
+            Passando para lembrar que <strong>{nome_paciente}</strong> tem sessão amanhã, <strong>{data}</strong>, às <strong>{horario}</strong>, com <strong>{profissional}</strong> ({especialidade}).<br><br>
+            Responda <strong>SIM</strong> para confirmar ou <strong>NÃO</strong> para cancelar ou reagendar. Obrigado!<br>
+            <span style="font-size:11px;color:var(--text3)">— Equipe ClínicaHub</span>
+          </div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:8px;font-weight:500">Variáveis disponíveis (clique para copiar):</div>
+          <div class="var-pills">
+            <button class="var-pill" onclick="copyVar(this,'{nome_paciente}')">{nome_paciente}</button>
+            <button class="var-pill" onclick="copyVar(this,'{nome_responsavel}')">{nome_responsavel}</button>
+            <button class="var-pill" onclick="copyVar(this,'{data}')">{data}</button>
+            <button class="var-pill" onclick="copyVar(this,'{horario}')">{horario}</button>
+            <button class="var-pill" onclick="copyVar(this,'{profissional}')">{profissional}</button>
+            <button class="var-pill" onclick="copyVar(this,'{especialidade}')">{especialidade}</button>
+            <button class="var-pill" onclick="copyVar(this,'{valor_sessao}')">{valor_sessao}</button>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-sm btn-primary"><i class="ti ti-brand-whatsapp"></i> Enviar via WhatsApp</button>
+            <button class="btn btn-sm"><i class="ti ti-message"></i> Enviar via SMS</button>
+            <button class="btn btn-sm"><i class="ti ti-send"></i> Enviar todos pendentes</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-clock"></i>Confirmações pendentes — amanhã (28/05)</div>
+          <button class="btn btn-sm btn-primary"><i class="ti ti-send"></i> Enviar todos agora</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Paciente</th><th>Responsável</th><th>Telefone</th><th>Horário</th><th>Profissional</th><th>Canal preferido</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Lucas M.</td><td>Carla Mendes</td><td>(51) 99999-0001</td><td>08:00</td><td>Dra. Ana Paula</td><td><span class="chip chip-green">WhatsApp</span></td><td><span class="chip chip-amber">Pendente</span></td><td><button class="btn btn-sm btn-wpp"><i class="ti ti-send"></i></button></td></tr>
+              <tr><td>Sofia R.</td><td>Patrícia Rodrigues</td><td>(51) 99999-0002</td><td>09:00</td><td>Dr. Caio Lima</td><td><span class="chip chip-gray">SMS</span></td><td><span class="chip chip-amber">Pendente</span></td><td><button class="btn btn-sm"><i class="ti ti-send"></i></button></td></tr>
+              <tr><td>Clara B.</td><td>Juliana Borges</td><td>(51) 99999-0006</td><td>11:30</td><td>Dr. Caio Lima</td><td><span class="chip chip-green">WhatsApp</span></td><td><span class="chip chip-green">Enviado ✓</span></td><td><button class="btn btn-sm"><i class="ti ti-refresh"></i></button></td></tr>
+              <tr><td>Ana G.</td><td>Sandra Gomes</td><td>(51) 99999-0007</td><td>16:00</td><td>Dr. Rafael</td><td><span class="chip chip-green">WhatsApp</span></td><td><span class="chip chip-amber">Pendente</span></td><td><button class="btn btn-sm btn-wpp"><i class="ti ti-send"></i></button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RELATÓRIOS ===== -->
+    <div class="screen" id="screen-relatorios">
+      <div class="metrics">
+        <div class="metric"><div class="metric-label">Pacientes atendidos</div><div class="metric-value mv-blue">47</div><div class="metric-sub">maio 2025</div></div>
+        <div class="metric"><div class="metric-label">Total de sessões</div><div class="metric-value">104</div><div class="metric-sub">↑ 8% vs abril</div></div>
+        <div class="metric"><div class="metric-label">Taxa de presença</div><div class="metric-value mv-green">89%</div></div>
+        <div class="metric"><div class="metric-label">Ticket médio</div><div class="metric-value">R$ 177</div><div class="metric-sub">Por sessão</div></div>
+        <div class="metric"><div class="metric-label">Faturamento YTD</div><div class="metric-value mv-green">R$ 81.750</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card col-span-2">
+          <div class="card-header"><div class="card-title"><i class="ti ti-chart-line"></i>Evolução de receita — 6 meses</div><button class="btn btn-sm"><i class="ti ti-download"></i> Exportar</button></div>
+          <div class="chart-wrap" style="height:220px"><canvas id="c-rel"></canvas></div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-chart-pie"></i>Distribuição por especialidade</div></div>
+          <div class="chart-wrap" style="height:180px"><canvas id="c-pie"></canvas></div>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:11px;color:var(--text3);margin-top:10px">
+            <span><span style="width:9px;height:9px;background:#1D9E75;border-radius:2px;display:inline-block;margin-right:3px"></span>Fono 35%</span>
+            <span><span style="width:9px;height:9px;background:#185FA5;border-radius:2px;display:inline-block;margin-right:3px"></span>Psicoped. 30%</span>
+            <span><span style="width:9px;height:9px;background:#BA7517;border-radius:2px;display:inline-block;margin-right:3px"></span>Psicologia 25%</span>
+            <span><span style="width:9px;height:9px;background:#533AB7;border-radius:2px;display:inline-block;margin-right:3px"></span>TO 10%</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-trending-up"></i>Evolução da média de objetivos</div></div>
+          <div class="chart-wrap" style="height:180px"><canvas id="c-avancor"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CONFIGURAÇÕES ===== -->
+    <div class="screen" id="screen-configuracoes">
+      <div class="settings-section">
+        <div class="settings-title"><i class="ti ti-building"></i>Dados da clínica</div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Nome da clínica</label><input class="form-input" value="Espaço Multidisciplinar"></div>
+          <div class="form-group"><label class="form-label">CNPJ</label><input class="form-input" value="00.000.000/0001-00"></div>
+          <div class="form-group"><label class="form-label">Telefone</label><input class="form-input" value="(51) 3000-0000"></div>
+          <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" value="contato@clinica.com.br"></div>
+          <div class="form-group"><label class="form-label">Endereço</label><input class="form-input" value="Rua das Clínicas, 123 — Porto Alegre/RS"></div>
+        </div>
+        <button class="btn btn-primary btn-sm"><i class="ti ti-device-floppy"></i> Salvar alterações</button>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title"><i class="ti ti-bell"></i>Notificações e confirmações</div>
+        <div class="settings-row"><div><div class="settings-row-label">Confirmação automática por WhatsApp</div><div class="settings-row-sub">Envio automático 24h antes da sessão</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+        <div class="settings-row"><div><div class="settings-row-label">Confirmação por SMS</div><div class="settings-row-sub">Fallback quando WhatsApp não responde</div></div><label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label></div>
+        <div class="settings-row"><div><div class="settings-row-label">Alerta de prontuário desatualizado</div><div class="settings-row-sub">Notifica após 7 dias sem registro</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+        <div class="settings-row"><div><div class="settings-row-label">Alerta de pagamento pendente</div><div class="settings-row-sub">Notifica após 3 dias em atraso</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+        <div class="settings-row"><div><div class="settings-row-label">Relatório mensal automático</div><div class="settings-row-sub">Enviado por e-mail todo dia 1º</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title"><i class="ti ti-brand-google"></i>Integrações</div>
+        <div class="settings-row"><div><div class="settings-row-label">Google Calendar</div><div class="settings-row-sub">Sincronização bidirecional de agendamentos</div></div><button class="btn btn-sm" style="background:#E6F1FB;color:#0C447C;border-color:#B5D4F4"><i class="ti ti-check"></i> Conectado</button></div>
+        <div class="settings-row"><div><div class="settings-row-label">WhatsApp Business API</div><div class="settings-row-sub">Envio automático de mensagens</div></div><button class="btn btn-sm btn-primary">Conectar</button></div>
+        <div class="settings-row"><div><div class="settings-row-label">Twilio (SMS)</div><div class="settings-row-sub">Envio de SMS de confirmação</div></div><button class="btn btn-sm btn-primary">Conectar</button></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title"><i class="ti ti-lock"></i>Conta e acesso</div>
+        <div class="settings-row"><div><div class="settings-row-label">Alterar senha</div><div class="settings-row-sub">Última alteração há 30 dias</div></div><button class="btn btn-sm">Alterar</button></div>
+        <div class="settings-row"><div><div class="settings-row-label">Autenticação em dois fatores</div><div class="settings-row-sub">Recomendado para maior segurança</div></div><label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label></div>
+        <div class="settings-row"><div><div class="settings-row-label">Backup automático dos dados</div><div class="settings-row-sub">Backup diário na nuvem</div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+      </div>
+    </div>
+
+  </div><!-- end content -->
+</div><!-- end main -->
+</div><!-- end app -->
+
+<!-- NOTIF PANEL -->
+<div id="notif-panel">
+  <div class="notif-header">Notificações</div>
+  <div class="notif-item"><div class="notif-icon ni-red"><i class="ti ti-cash"></i></div><div><div class="notif-text">Pagamento pendente — Sofia R.</div><div class="notif-sub">Sessão 20/05 · R$ 200,00</div></div></div>
+  <div class="notif-item"><div class="notif-icon ni-amber"><i class="ti ti-clipboard-text"></i></div><div><div class="notif-text">Prontuário desatualizado — Pedro A.</div><div class="notif-sub">8 dias sem registro de sessão</div></div></div>
+  <div class="notif-item"><div class="notif-icon ni-blue"><i class="ti ti-brand-whatsapp"></i></div><div><div class="notif-text">3 confirmações pendentes</div><div class="notif-sub">Amanhã, 28/05 — enviar agora?</div></div></div>
+</div>
+
+<!-- MODAL: NOVO PACIENTE -->
+<div class="modal-overlay" id="modal-paciente">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-paciente')"><i class="ti ti-x"></i></button>
+    <div class="modal-title">Cadastro de paciente</div>
+    <div class="form-section">Dados do paciente</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Nome completo *</label><input class="form-input" placeholder="Nome do paciente"></div>
+      <div class="form-group"><label class="form-label">Data de nascimento *</label><input class="form-input" type="date"></div>
+      <div class="form-group"><label class="form-label">Diagnóstico / CID</label><input class="form-input" placeholder="Ex: TEA Nível 1 (F84.0)"></div>
+      <div class="form-group"><label class="form-label">Escola</label><input class="form-input" placeholder="Nome da escola e turma"></div>
+    </div>
+    <div class="form-section">Responsável</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Nome do responsável *</label><input class="form-input" placeholder="Nome completo"></div>
+      <div class="form-group"><label class="form-label">Parentesco</label><select class="form-input"><option>Mãe</option><option>Pai</option><option>Avó/Avô</option><option>Outro</option></select></div>
+      <div class="form-group"><label class="form-label">Telefone / WhatsApp *</label><input class="form-input" placeholder="(51) 99999-9999"></div>
+      <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" placeholder="email@exemplo.com"></div>
+      <div class="form-group"><label class="form-label">CPF do responsável</label><input class="form-input" placeholder="000.000.000-00"></div>
+      <div class="form-group"><label class="form-label">Plano de saúde</label><input class="form-input" placeholder="Particular / nome do plano"></div>
+    </div>
+    <div class="form-section">Atendimento</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Profissional responsável *</label><select class="form-input"><option>Dra. Ana Paula — Fonoaudiologia</option><option>Dr. Caio Lima — Psicopedagogia</option><option>Dra. Beatriz — Psicologia</option><option>Dr. Rafael — Terapia Ocupacional</option></select></div>
+      <div class="form-group"><label class="form-label">Frequência semanal</label><select class="form-input"><option>1x por semana</option><option>2x por semana</option><option>3x por semana</option></select></div>
+      <div class="form-group"><label class="form-label">Valor da sessão (R$)</label><input class="form-input" type="number" placeholder="0,00"></div>
+      <div class="form-group"><label class="form-label">Forma de pagamento</label><select class="form-input"><option>PIX</option><option>Cartão de crédito</option><option>Cartão de débito</option><option>Boleto</option><option>Dinheiro</option></select></div>
+    </div>
+    <div class="form-group" style="margin-bottom:16px"><label class="form-label">Observações iniciais</label><textarea class="form-input" placeholder="Histórico, comportamentos observados, informações relevantes para o início do atendimento..."></textarea></div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeModal('modal-paciente')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-paciente')"><i class="ti ti-check"></i> Salvar cadastro</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NOVO AGENDAMENTO -->
+<div class="modal-overlay" id="modal-agendamento">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-agendamento')"><i class="ti ti-x"></i></button>
+    <div class="modal-title">Novo agendamento</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Paciente *</label><select class="form-input"><option>Lucas Mendes</option><option>Sofia Rodrigues</option><option>Pedro Alves</option><option>Maria Costa</option><option>João Ferreira</option></select></div>
+      <div class="form-group"><label class="form-label">Profissional *</label><select class="form-input"><option>Dra. Ana Paula</option><option>Dr. Caio Lima</option><option>Dra. Beatriz</option><option>Dr. Rafael</option></select></div>
+      <div class="form-group"><label class="form-label">Data *</label><input class="form-input" type="date"></div>
+      <div class="form-group"><label class="form-label">Horário *</label><input class="form-input" type="time"></div>
+      <div class="form-group"><label class="form-label">Duração</label><select class="form-input"><option>30 minutos</option><option selected>50 minutos</option><option>1 hora</option></select></div>
+      <div class="form-group"><label class="form-label">Recorrência</label><select class="form-input"><option>Sem recorrência</option><option>Semanal</option><option>Quinzenal</option></select></div>
+    </div>
+    <div class="form-group" style="margin-bottom:16px"><label class="form-label">Observações</label><textarea class="form-input" rows="2" placeholder="Notas sobre esta sessão..."></textarea></div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeModal('modal-agendamento')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-agendamento')"><i class="ti ti-calendar-plus"></i> Confirmar agendamento</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NOVA SESSÃO / EVOLUÇÃO -->
+<div class="modal-overlay" id="modal-sessao">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-sessao')"><i class="ti ti-x"></i></button>
+    <div class="modal-title">Registro de sessão — Lucas Mendes</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Data da sessão</label><input class="form-input" type="date"></div>
+      <div class="form-group"><label class="form-label">Profissional</label><select class="form-input"><option>Dra. Ana Paula</option></select></div>
+      <div class="form-group"><label class="form-label">Presença</label><select class="form-input"><option>Presente</option><option>Faltou (justificado)</option><option>Faltou (sem justificativa)</option></select></div>
+      <div class="form-group"><label class="form-label">Objetivo da sessão</label><select class="form-input"><option>Comunicação funcional</option><option>Tolerância à frustração</option><option>Interação social</option><option>Outro</option></select></div>
+    </div>
+    <div class="form-group" style="margin-bottom:12px"><label class="form-label">Status do objetivo</label>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <button class="btn btn-sm" style="background:#E1F5EE;border-color:#9FE1CB;color:#0F6E56">✓ Atingido</button>
+        <button class="btn btn-sm" style="background:#FAEEDA;border-color:#FAC775;color:#633806">~ Parcialmente atingido</button>
+        <button class="btn btn-sm">✗ Não atingido</button>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:16px"><label class="form-label">Evolução da sessão *</label><textarea class="form-input" rows="5" placeholder="Descreva o comportamento, respostas, avanços, dificuldades observadas durante a sessão..."></textarea></div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeModal('modal-sessao')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-sessao')"><i class="ti ti-device-floppy"></i> Salvar registro</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NOVO OBJETIVO -->
+<div class="modal-overlay" id="modal-objetivo">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-objetivo')"><i class="ti ti-x"></i></button>
+    <div class="modal-title">Novo objetivo terapêutico</div>
+    <div class="form-grid">
+      <div class="form-group" style="grid-column:span 2"><label class="form-label">Descrição do objetivo *</label><input class="form-input" placeholder="Ex: Usar frases de 2 palavras para pedir algo"></div>
+      <div class="form-group"><label class="form-label">Mês de referência</label><input class="form-input" type="month"></div>
+      <div class="form-group"><label class="form-label">Progresso inicial (%)</label><input class="form-input" type="number" min="0" max="100" value="0"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeModal('modal-objetivo')">Cancelar</button>
+      <button class="btn btn-primary" onclick="addObj()"><i class="ti ti-plus"></i> Adicionar objetivo</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NOVO LANÇAMENTO FINANCEIRO -->
+<div class="modal-overlay" id="modal-lancamento">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-lancamento')"><i class="ti ti-x"></i></button>
+    <div class="modal-title">Novo lançamento financeiro</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Tipo *</label><select class="form-input"><option>Entrada</option><option>Saída</option></select></div>
+      <div class="form-group"><label class="form-label">Data *</label><input class="form-input" type="date"></div>
+      <div class="form-group" style="grid-column:span 2"><label class="form-label">Descrição *</label><input class="form-input" placeholder="Ex: Lucas M. — Fonoaudiologia"></div>
+      <div class="form-group"><label class="form-label">Categoria</label><select class="form-input"><option>Sessão</option><option>Repasse profissional</option><option>Despesa fixa</option><option>Suprimentos</option><option>Outros</option></select></div>
+      <div class="form-group"><label class="form-label">Valor (R$) *</label><input class="form-input" type="number" min="0" step="0.01" placeholder="0,00"></div>
+      <div class="form-group"><label class="form-label">Forma de pagamento</label><select class="form-input"><option>PIX</option><option>Cartão de crédito</option><option>Cartão de débito</option><option>Dinheiro</option><option>Transferência</option><option>Boleto</option></select></div>
+      <div class="form-group"><label class="form-label">Status</label><select class="form-input"><option>Pago</option><option>Pendente</option><option>Parcelado</option></select></div>
+    </div>
+    <div class="form-group" style="margin-bottom:16px"><label class="form-label">Observações</label><textarea class="form-input" rows="2" placeholder="Notas adicionais..."></textarea></div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeModal('modal-lancamento')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-lancamento')"><i class="ti ti-check"></i> Salvar lançamento</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NOVO PROFISSIONAL -->
+<div class="modal-overlay" id="modal-profissional">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-profissional')"><i class="ti ti-x"></i></button>
+    <div class="modal-title">Cadastro de profissional</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Nome completo *</label><input class="form-input" placeholder="Nome do profissional"></div>
+      <div class="form-group"><label class="form-label">Especialidade *</label><select class="form-input"><option>Fonoaudiologia</option><option>Psicopedagogia</option><option>Psicologia</option><option>Terapia Ocupacional</option><option>Neuropsicologia</option><option>Outro</option></select></div>
+      <div class="form-group"><label class="form-label">Registro profissional</label><input class="form-input" placeholder="CRP / CRFa / CREFITO..."></div>
+      <div class="form-group"><label class="form-label">WhatsApp</label><input class="form-input" placeholder="(51) 99999-9999"></div>
+      <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" placeholder="profissional@email.com"></div>
+      <div class="form-group"><label class="form-label">CPF</label><input class="form-input" placeholder="000.000.000-00"></div>
+      <div class="form-group"><label class="form-label">% de repasse *</label><input class="form-input" type="number" min="0" max="100" placeholder="40"></div>
+      <div class="form-group"><label class="form-label">Modalidade de contrato</label><select class="form-input"><option>Autônomo (RPA)</option><option>MEI</option><option>CLT</option></select></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeModal('modal-profissional')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-profissional')"><i class="ti ti-check"></i> Cadastrar profissional</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const titles={dashboard:'Dashboard',agenda:'Agenda',pacientes:'Pacientes',prontuario:'Prontuário — Lucas Mendes',objetivos:'Objetivos terapêuticos',financeiro:'Financeiro',profissionais:'Profissionais',mensagens:'Confirmações de atendimento',relatorios:'Relatórios',configuracoes:'Configurações'};
+const actionLabels={dashboard:'Novo paciente',agenda:'Novo agendamento',pacientes:'Novo paciente',prontuario:'Nova sessão',objetivos:'Novo objetivo',financeiro:'Novo lançamento',profissionais:'Novo profissional',mensagens:'Enviar todos',relatorios:'Exportar',configuracoes:'Salvar'};
+const actionModals={dashboard:'modal-paciente',agenda:'modal-agendamento',pacientes:'modal-paciente',prontuario:'modal-sessao',objetivos:'modal-objetivo',financeiro:'modal-lancamento',profissionais:'modal-profissional'};
+let currentScreen='dashboard';
+let chartsInit={};
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')?.includes("'"+id+"'"))n.classList.add('active')});
+  document.getElementById('topbar-title').textContent=titles[id]||id;
+  document.getElementById('action-label').textContent=actionLabels[id]||'Novo';
+  currentScreen=id;
+  closeNotif();
+  if(!chartsInit[id]){chartsInit[id]=true;setTimeout(()=>initCharts(id),50)}
+}
+
+function handleAction(){
+  const m=actionModals[currentScreen];
+  if(m)openModal(m);
+}
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')}));
+
+let notifOpen=false;
+function toggleNotif(){notifOpen=!notifOpen;document.getElementById('notif-panel').style.display=notifOpen?'block':'none'}
+function closeNotif(){notifOpen=false;document.getElementById('notif-panel').style.display='none'}
+
+function setPtab(btn,paneId){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  ['pane-evolucao','pane-objetivos-p','pane-anamnese','pane-docs','pane-historico'].forEach(p=>{
+    const el=document.getElementById(p);if(el){el.classList.remove('active');if(p===paneId)el.classList.add('active')}
+  });
+}
+
+function toggleObj(item){
+  const ch=item.querySelector('.obj-check');
+  ch.classList.toggle('done');
+  ch.innerHTML=ch.classList.contains('done')?'<i class="ti ti-check"></i>':'';
+}
+
+function addObj(){
+  const list=document.getElementById('obj-list');
+  const el=document.createElement('div');
+  el.className='obj-item';
+  el.onclick=function(){toggleObj(this)};
+  el.innerHTML='<div class="obj-check"></div><div class="obj-text">Novo objetivo terapêutico</div><div class="obj-pct">0%</div>';
+  list.appendChild(el);
+  closeModal('modal-objetivo');
+}
+
+function copyVar(btn,text){
+  navigator.clipboard?.writeText(text).catch(()=>{});
+  const orig=btn.textContent;
+  btn.textContent='Copiado!';
+  setTimeout(()=>btn.textContent=orig,1200);
+}
+
+const T='#1D9E75',T2='#9FE1CB',BL='#185FA5',AM='#BA7517',PU='#533AB7',GR='rgba(180,180,180,0.15)';
+const tOpts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:GR},ticks:{color:'#888',font:{size:11}}},y:{grid:{color:GR},ticks:{color:'#888',font:{size:11}}}}};
+
+function mk(id,type,labels,datasets,extra){
+  const el=document.getElementById(id);if(!el||el._chart)return;
+  el._chart=new Chart(el,{type,data:{labels,datasets},options:{...tOpts,...extra,plugins:{legend:{display:false}}}});
+}
+
+function initCharts(id){
+  if(id==='dashboard'){
+    mk('c-receita','bar',['Jan','Fev','Mar','Abr','Mai'],[{data:[14200,15800,16200,17100,18450],backgroundColor:T,borderRadius:4},{data:[6200,6900,7100,7600,9820],backgroundColor:T2,borderRadius:4}]);
+  }
+  if(id==='objetivos'){
+    mk('c-objetivos','bar',['Lucas','Sofia','Pedro','Maria','João','Clara','Ana','Carlos'],[{data:[85,72,58,91,63,77,82,55],backgroundColor:[T,T,AM,T,AM,T,T,AM],borderRadius:4}]);
+    mk('c-avanco','line',['Jan','Fev','Mar','Abr','Mai'],[{data:[62,65,68,70,73],borderColor:T,backgroundColor:'rgba(29,158,117,0.08)',tension:0.4,fill:true,pointBackgroundColor:T,pointRadius:4}],{scales:{x:{grid:{color:GR},ticks:{color:'#888',font:{size:11}}},y:{grid:{color:GR},ticks:{color:'#888',font:{size:11}},min:50,max:100}}});
+  }
+  if(id==='profissionais'){
+    mk('c-profs','bar',['Dra. Ana Paula','Dr. Caio','Dra. Beatriz','Dr. Rafael'],[{data:[32,28,24,20],backgroundColor:[T,BL,AM,PU],borderRadius:4}]);
+  }
+  if(id==='relatorios'){
+    mk('c-rel','line',['Dez','Jan','Fev','Mar','Abr','Mai'],[{data:[13100,14200,15800,16200,17100,18450],borderColor:T,backgroundColor:'rgba(29,158,117,0.08)',tension:0.4,fill:true,pointBackgroundColor:T,pointRadius:4}]);
+    mk('c-pie','doughnut',['Fono','Psicopedagogia','Psicologia','TO'],[{data:[35,30,25,10],backgroundColor:[T,BL,AM,PU],borderWidth:0,hoverOffset:4}],{scales:{}});
+    mk('c-avancor','line',['Jan','Fev','Mar','Abr','Mai'],[{data:[62,65,68,70,73],borderColor:T,backgroundColor:'rgba(29,158,117,0.08)',tension:0.4,fill:true,pointBackgroundColor:T,pointRadius:4}],{scales:{x:{grid:{color:GR},ticks:{color:'#888',font:{size:11}}},y:{grid:{color:GR},ticks:{color:'#888',font:{size:11}},min:50,max:100}}});
+  }
+}
+
+initCharts('dashboard');
+</script>
+</body>
+</html>

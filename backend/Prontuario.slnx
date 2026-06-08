@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Prontuario.Api/Prontuario.Api.csproj" />
+    <Project Path="src/Prontuario.Application/Prontuario.Application.csproj" />
+    <Project Path="src/Prontuario.Domain/Prontuario.Domain.csproj" />
+    <Project Path="src/Prontuario.Infrastructure/Prontuario.Infrastructure.csproj" />
+  </Folder>
+</Solution>

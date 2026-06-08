@@ -1,0 +1,12 @@
+/home/rafael/repos/prontuario-/backend/src/Prontuario.Domain/bin/Debug/net10.0/Prontuario.Domain.deps.json
+/home/rafael/repos/prontuario-/backend/src/Prontuario.Domain/bin/Debug/net10.0/Prontuario.Domain.dll
+/home/rafael/repos/prontuario-/backend/src/Prontuario.Domain/bin/Debug/net10.0/Prontuario.Domain.pdb
+/home/rafael/repos/prontuario-/backend/src/Prontuario.Domain/obj/Debug/net10.0/Prontuario.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/home/rafael/repos/prontuario-/backend/src/Prontuario.Domain/obj/Debug/net10.0/Prontuario.Domain.AssemblyInfoInputs.cache
+/home/rafael/repos/prontuario-/backend/src/Prontuario.Domain/obj/Debug/net10.0/Prontuario.Domain.AssemblyInfo.cs
+/home/rafael/repos/prontuario-/backend/src/Prontuario.Domain/obj/Debug/net10.0/Prontuario.Domain.csproj.CoreCompileInputs.cache
+/home/rafael/repos/prontuario-/backend/src/Prontuario.Domain/obj/Debug/net10.0/Prontuario.Domain.sourcelink.json
+/home/rafael/repos/prontuario-/backend/src/Prontuario.Domain/obj/Debug/net10.0/Prontuario.Domain.dll
+/home/rafael/repos/prontuario-/backend/src/Prontuario.Domain/obj/Debug/net10.0/refint/Prontuario.Domain.dll
+/home/rafael/repos/prontuario-/backend/src/Prontuario.Domain/obj/Debug/net10.0/Prontuario.Domain.pdb
+/home/rafael/repos/prontuario-/backend/src/Prontuario.Domain/obj/Debug/net10.0/ref/Prontuario.Domain.dll
